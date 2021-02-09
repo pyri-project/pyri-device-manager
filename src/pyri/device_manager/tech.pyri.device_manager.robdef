@@ -1,0 +1,56 @@
+service tech.pyri.device_manager
+
+stdver 0.10
+
+import com.robotraconteur.datetime
+import com.robotraconteur.device
+import com.robotraconteur.identifier
+
+using com.robotraconteur.datetime.DateTimeUTC
+using com.robotraconteur.device.Device
+using com.robotraconteur.device.DeviceInfo
+using com.robotraconteur.identifier.Identifier
+
+exception DeviceNotFound
+
+struct PyriDeviceInfo
+    field Identifier device
+    field Identifier parent_device
+    field Identifier manufacturer
+    field Identifier model
+    field string serial_number
+    field string user_description
+    field Identifier node
+    field string service_name
+    field string{list} urls
+    field string root_object_type
+    field string{list} root_object_implements
+    field string local_device_name
+    field string{list} associated_devices
+end
+
+object DeviceManager
+
+    implements Device
+
+    property DeviceInfo device_info [readonly,nolock]
+
+    function PyriDeviceInfo{list} getf_detected_devices()
+
+    function PyriDeviceInfo{list} getf_active_devices()
+
+    function PyriDeviceInfo getf_detected_device_info(Identifier device)
+    function PyriDeviceInfo getf_device_info(string local_device_name)
+
+    function void add_device(Identifier device, string local_device_name, string{list} associated_devices)
+    function void replace_device(Identifier device, string local_device_name, string{list} associated_devices)
+    function void remove_device(string local_device_name)
+
+    event device_added(Identifier device, string local_device_name)    
+    event device_removed(Identifier device, string local_device_name)
+    event device_updated(string local_device_name)
+
+    event device_detected(Identifier device)
+    event device_lost(Identifier device)
+
+end

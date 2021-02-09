@@ -1,0 +1,19 @@
+device:
+  name: pyri_device_manager
+manufacturer:
+  name: PyRI_Project
+  uuid: 244389f3-35d5-4f9f-a244-c89649ce2a18
+model:
+  name: pyri_device_manager
+  uuid: 26f70294-9a3d-4e2b-ada3-095da9ed2d4a
+user_description: Device management for PyRI systems
+serial_number: 1
+device_classes:
+  - class_identifier:
+      name: device_manager
+      uuid: 7caea7e1-bdca-4eb3-98f7-de0b38cce371
+    subclasses:
+      - autodiscovery
+implemented_types:
+  - com.robotraconteur.device.Device
+  - tech.pyri.device_manager.VariableStorage
