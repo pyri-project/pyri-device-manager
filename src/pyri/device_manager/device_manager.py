@@ -117,7 +117,7 @@ class DeviceManager(object):
         device_info.associated_devices = associated_devices or []
         var_storage.add_variable2("device_manager",local_device_name,"tech.pyri.device_manager.PyriDeviceInfo", \
             RR.VarValue(device_info,"tech.pyri.device_manager.PyriDeviceInfo"), ["active_device"], {}, variable_persistence["const"], None, variable_protection_level["read_write"], \
-                [], replace)
+                [], "", replace)
 
     def add_device(self, device_ident, local_device_name, associated_devices):
         #TODO: check device name format
