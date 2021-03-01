@@ -47,7 +47,7 @@ object DeviceManager
     function void remove_device(string local_device_name)
 
     event device_added(Identifier device, string local_device_name)    
-    event device_removed(Identifier device, string local_device_name)
+    event device_removed(string local_device_name)
     event device_updated(string local_device_name)
 
     event device_detected(Identifier device)

@@ -4,14 +4,31 @@ from RobotRaconteurCompanion.Util import DateTimeUtil as rr_datetime_util
 from RobotRaconteurCompanion.Util import IdentifierUtil as rr_ident_util
 import threading
 
+def _get_all_candidate_urls(service_info, node):
+    # TODO: Check that url nodeid and nodename match service_info
 
-def _service_info_to_pyri_device_info(service_info, pyri_device_info_type, ident_util : rr_ident_util.IdentifierUtil):
+    # TODO: Use node cache directly
+
+    node_info = node.FindNodeByID(service_info.NodeID,["rr+tcp"])
+
+    assert len(node_info) > 0
+    if node_info is None:
+        return service_info.ConnectionURL
+
+    ret = []
+    for u in node_info[0].ConnectionURL:
+        ret.append(f"{u}&service={service_info.Name}")
+    
+    return ret
+    
+
+def _service_info_to_pyri_device_info(service_info, pyri_device_info_type, ident_util : rr_ident_util.IdentifierUtil, node):
 
     # TODO: strict type checking of incoming data
     ret = pyri_device_info_type()
     ret.node = ident_util.CreateIdentifier(service_info.NodeName,str(service_info.NodeID))
     ret.service_name = service_info.Name
-    ret.urls = service_info.ConnectionURL
+    ret.urls = _get_all_candidate_urls(service_info,node) # service_info.ConnectionURL
     ret.root_object_type = service_info.RootObjectType
     if service_info.RootObjectImplements is not None:
         ret.root_object_implements = list(service_info.RootObjectImplements)
@@ -48,7 +65,9 @@ class DeviceManager(object):
         self._datetime_util = rr_datetime_util.DateTimeUtil(self._node)
         self._ident_util = rr_ident_util.IdentifierUtil(self._node)
 
-        self._discovery = self._node.SubscribeServiceInfo2('com.robotraconteur.device.Device')
+        filter_ = RR.ServiceSubscriptionFilter()
+        filter_.TransportSchemes=["rr+tcp"]
+        self._discovery = self._node.SubscribeServiceInfo2('com.robotraconteur.device.Device',filter_)
 
         self._discovery.ServiceDetected += self._service_detected
         self._discovery.ServiceLost += self._service_lost
@@ -62,12 +81,12 @@ class DeviceManager(object):
         self._variable_storage = self._node.SubscribeService(variable_storage_url)
         
     def _service_detected(self, sub,sub_id,service_info2):
-        dev_info = _service_info_to_pyri_device_info(service_info2,self._pyri_device_info_type, self._ident_util)
+        dev_info = _service_info_to_pyri_device_info(service_info2,self._pyri_device_info_type, self._ident_util, self._node)
         if dev_info.device is not None:
             self.device_detected.fire(dev_info.device)
 
     def _service_lost(self, sub,sub_id,service_info2):
-        dev_info = _service_info_to_pyri_device_info(service_info2,self._pyri_device_info_type, self._ident_util)
+        dev_info = _service_info_to_pyri_device_info(service_info2,self._pyri_device_info_type, self._ident_util, self._node)
         if dev_info.device is not None:
             self.device_lost.fire(dev_info.device)
 
@@ -76,7 +95,7 @@ class DeviceManager(object):
             ret = []
             devices = self._discovery.GetDetectedServiceInfo2()
             for d in devices.values():
-                ret.append(_service_info_to_pyri_device_info(d,self._pyri_device_info_type, self._ident_util))
+                ret.append(_service_info_to_pyri_device_info(d,self._pyri_device_info_type, self._ident_util,self._node))
 
             return ret
 
