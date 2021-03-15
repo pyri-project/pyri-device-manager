@@ -123,7 +123,7 @@ class DeviceManager(object):
     def getf_device_info(self, local_device_name):
         with self._lock:             
             var_storage = self._variable_storage.GetDefaultClient()
-            device_info = var_storage.getf_variable_value("device_manager",local_device_name,["active_device"]).data
+            device_info = var_storage.getf_variable_value("device_manager",local_device_name).data
             return device_info
 
     def _add_device_variable(self, device_ident, local_device_name, associated_devices, replace):
