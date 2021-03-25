@@ -19,5 +19,5 @@ The `pyri-variable-storage` service must be running before use. See https://gith
 To start the service, run:
 
 ```
-pyri-device-manager-service --device-info-file=config/pyri_device_manager_default_info.yml --variable-storage-url=rr+tcp://localhost:59901?service=variable_storage
+pyri-device-manager-service --device-info-file=config/pyri_device_manager_default_info.yml --variable-storage-url=rr+tcp://localhost:59901?service=variable_storage --robotraconteur-tcp-ipv4-discovery=true
 ```
