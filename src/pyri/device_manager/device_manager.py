@@ -11,8 +11,7 @@ def _get_all_candidate_urls(service_info, node):
 
     node_info = node.FindNodeByID(service_info.NodeID,["rr+tcp"])
 
-    assert len(node_info) > 0
-    if node_info is None:
+    if node_info is None or len(node_info) == 0:
         return service_info.ConnectionURL
 
     ret = []
