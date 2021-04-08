@@ -115,6 +115,8 @@ class DeviceManager(object):
 
         #TODO: More efficient search for device
         for d in devices:
+            if self._ident_util.IsIdentifierAny(d.device):
+                continue
             if self._ident_util.IsIdentifierMatch(device_ident,d.device):
                 return d
         raise self._device_not_found(f"Device {self._ident_util.IdentifierToString(device_ident)} not found")
