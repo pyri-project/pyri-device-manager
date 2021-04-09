@@ -7,15 +7,13 @@ import threading
 def _get_all_candidate_urls(service_info, node):
     # TODO: Check that url nodeid and nodename match service_info
 
-    # TODO: Use node cache directly
-
-    node_info = node.FindNodeByID(service_info.NodeID,["rr+tcp"])
-
-    if node_info is None or len(node_info) == 0:
+     try:
+        node_info = node.GetDetectedNodeCacheInfo(service_info.NodeID)
+    except:
         return service_info.ConnectionURL
 
     ret = []
-    for u in node_info[0].ConnectionURL:
+    for u in node_info.ConnectionURL:
         ret.append(f"{u}&service={service_info.Name}")
     
     return ret
