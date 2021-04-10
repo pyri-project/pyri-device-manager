@@ -14,6 +14,8 @@ def _get_all_candidate_urls(service_info, node):
 
     ret = []
     for u in node_info.ConnectionURL:
+        u = u.replace("&service=RobotRaconteurServiceIndex","")
+        u = u.replace("service=RobotRaconteurServiceIndex&","")
         ret.append(f"{u}&service={service_info.Name}")
     
     return ret
