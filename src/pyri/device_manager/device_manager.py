@@ -7,7 +7,7 @@ import threading
 def _get_all_candidate_urls(service_info, node):
     # TODO: Check that url nodeid and nodename match service_info
 
-     try:
+    try:
         node_info = node.GetDetectedNodeCacheInfo(service_info.NodeID)
     except:
         return service_info.ConnectionURL
@@ -89,12 +89,21 @@ class DeviceManager(object):
 
     def getf_detected_devices(self):
         with self._lock:
-            ret = []
+            ret_local = []
+            ret_other = []
             devices = self._discovery.GetDetectedServiceInfo2()
-            for d in devices.values():
-                ret.append(_service_info_to_pyri_device_info(d,self._pyri_device_info_type, self._ident_util,self._node))
 
-            return ret
+            local_prefix = ["rr+local", "rr+hardware", "rr+intra"]
+            
+            for d in devices.values():
+                d2 = _service_info_to_pyri_device_info(d,self._pyri_device_info_type, self._ident_util,self._node)
+                # Check if device is local by checking if any url has rr+local, rr+hardware, or rr+intra prefix.
+                if any(any(u.startswith(p) for p in local_prefix) for u in d2.urls):
+                    ret_local.append(d2)
+                else:
+                    ret_other.append(d2)
+
+            return ret_local + ret_other
 
     def getf_active_devices(self):
         with self._lock:
