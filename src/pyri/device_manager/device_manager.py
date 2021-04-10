@@ -38,9 +38,15 @@ def _service_info_to_pyri_device_info(service_info, pyri_device_info_type, ident
         if "parent_device" in a:
             ret.parent_device = ident_util.StringToIdentifier(a["parent_device"].data)
         if "manufacturer" in a:
-            ret.manufacturer = ident_util.StringToIdentifier(a["manufacturer"].data)
+            try:
+                ret.manufacturer = ident_util.StringToIdentifier(a["manufacturer"].data)
+            except:
+                pass
         if "model" in a:
-            ret.model = ident_util.StringToIdentifier(a["model"].data)
+            try:
+                ret.model = ident_util.StringToIdentifier(a["model"].data)
+            except:
+                pass
         if "serial_number" in a:
             ret.serial_number = a["serial_number"].data
         if "user_description" in a:
