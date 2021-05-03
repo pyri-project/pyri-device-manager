@@ -31,6 +31,8 @@ def main():
 
     with RR.ServerNodeSetup("tech.pyri.device_manager",59902,argv=sys.argv):
 
+        RRN.ThreadPoolCount = 100
+
         dev_manager = DeviceManager(args.variable_storage_url, device_info=device_info, node = RRN) 
 
         service_ctx = RRN.RegisterService("device_manager","tech.pyri.device_manager.DeviceManager",dev_manager)
