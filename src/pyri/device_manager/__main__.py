@@ -7,12 +7,14 @@ import argparse
 from RobotRaconteurCompanion.Util.InfoFileLoader import InfoFileLoader
 from RobotRaconteurCompanion.Util.AttributesUtil import AttributesUtil
 from pyri.plugins import robdef as robdef_plugins
+from pyri.util.robotraconteur import add_default_ws_origins
 
 def main():
     parser = argparse.ArgumentParser(description="PyRI Variable Storage Service Node")
     parser.add_argument("--device-info-file", type=argparse.FileType('r'),default=None,required=True,help="Device info file for device manager service (required)")
     parser.add_argument('--variable-storage-url', type=str, default=None,required=True,help="Robot Raconteur URL for variable storage service (required)")
     parser.add_argument("--wait-signal",action='store_const',const=True,default=False, help="wait for SIGTERM orSIGINT (Linux only)")
+    parser.add_argument("--pyri-webui-server-port",type=int,default=8000,help="The PyRI WebUI port for websocket origin (default 8000)")
     
     
     args, _ = parser.parse_known_args()
@@ -29,7 +31,9 @@ def main():
     attributes_util = AttributesUtil(RRN)
     device_attributes = attributes_util.GetDefaultServiceAttributesFromDeviceInfo(device_info)
 
-    with RR.ServerNodeSetup("tech.pyri.device_manager",59902,argv=sys.argv):
+    with RR.ServerNodeSetup("tech.pyri.device_manager",59902,argv=sys.argv) as node_setup:
+
+        add_default_ws_origins(node_setup.tcp_transport,args.pyri_webui_server_port)
 
         RRN.ThreadPoolCount = 100
 
