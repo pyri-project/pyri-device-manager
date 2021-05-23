@@ -11,7 +11,7 @@ setup(
     packages=find_namespace_packages(where='src'),
     include_package_data=True,
     package_data = {
-        'pyri.device_manager': ['*.robdef']
+        'pyri.device_manager': ['*.robdef','*.yml']
     },
     zip_safe=False,
     install_requires=[

@@ -3,6 +3,7 @@ import RobotRaconteur as RR
 from RobotRaconteurCompanion.Util import DateTimeUtil as rr_datetime_util
 from RobotRaconteurCompanion.Util import IdentifierUtil as rr_ident_util
 import threading
+from pyri.device_manager_client import _DeviceManagerConnectFilter
 
 def _get_all_candidate_urls(service_info, node):
     # TODO: Check that url nodeid and nodename match service_info
@@ -57,7 +58,7 @@ def _service_info_to_pyri_device_info(service_info, pyri_device_info_type, ident
 
 
 class DeviceManager(object):
-    def __init__(self, variable_storage_url, device_info = None, node : RR.RobotRaconteurNode = None):
+    def __init__(self, variable_storage_url, variable_storage_identifier, device_info = None, node : RR.RobotRaconteurNode = None):
         self._lock = threading.RLock()
         if node is None:
             self._node = RR.RobotRaconteurNode.s
@@ -83,7 +84,13 @@ class DeviceManager(object):
         self.device_detected = RR.EventHook()
         self.device_lost = RR.EventHook()
 
-        self._variable_storage = self._node.SubscribeService(variable_storage_url)
+        if variable_storage_url is not None:
+            self._variable_storage = self._node.SubscribeService(variable_storage_url)
+        else:
+            if variable_storage_identifier is None:
+                variable_storage_identifier = "pyri_variable_storage"
+            filter = _DeviceManagerConnectFilter(variable_storage_identifier)
+            self._variable_storage = self._node.SubscribeServiceByType("tech.pyri.variable_storage.VariableStorage", filter.get_filter())
         
     def _service_detected(self, sub,sub_id,service_info2):
         dev_info = _service_info_to_pyri_device_info(service_info2,self._pyri_device_info_type, self._ident_util, self._node)

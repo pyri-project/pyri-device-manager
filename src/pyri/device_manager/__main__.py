@@ -7,52 +7,26 @@ import argparse
 from RobotRaconteurCompanion.Util.InfoFileLoader import InfoFileLoader
 from RobotRaconteurCompanion.Util.AttributesUtil import AttributesUtil
 from pyri.plugins import robdef as robdef_plugins
-from pyri.util.robotraconteur import add_default_ws_origins
+from pyri.util.service_setup import PyriServiceNodeSetup
 
 def main():
     parser = argparse.ArgumentParser(description="PyRI Variable Storage Service Node")
-    parser.add_argument("--device-info-file", type=argparse.FileType('r'),default=None,required=True,help="Device info file for device manager service (required)")
-    parser.add_argument('--variable-storage-url', type=str, default=None,required=True,help="Robot Raconteur URL for variable storage service (required)")
-    parser.add_argument("--wait-signal",action='store_const',const=True,default=False, help="wait for SIGTERM orSIGINT (Linux only)")
-    parser.add_argument("--pyri-webui-server-port",type=int,default=8000,help="The PyRI WebUI port for websocket origin (default 8000)")
-    
-    
-    args, _ = parser.parse_known_args()
-
-    RRC.RegisterStdRobDefServiceTypes(RRN)
-    robdef_plugins.register_all_plugin_robdefs(RRN)
-
-    with args.device_info_file:
-        device_info_text = args.device_info_file.read()
-
-    info_loader = InfoFileLoader(RRN)
-    device_info, device_ident_fd = info_loader.LoadInfoFileFromString(device_info_text, "com.robotraconteur.device.DeviceInfo", "device")
-
-    attributes_util = AttributesUtil(RRN)
-    device_attributes = attributes_util.GetDefaultServiceAttributesFromDeviceInfo(device_info)
-
-    with RR.ServerNodeSetup("tech.pyri.device_manager",59902,argv=sys.argv) as node_setup:
-
-        add_default_ws_origins(node_setup.tcp_transport,args.pyri_webui_server_port)
-
+    parser.add_argument('--variable-storage-url', type=str, default=None,required=False,help="Robot Raconteur URL for variable storage service")
+    parser.add_argument('--variable-storage-identifier', type=str, default=None,required=False,help="Robot Raconteur identifier for variable storage service")
+        
+    with PyriServiceNodeSetup("tech.pyri.device_manager",59902,register_plugin_robdef=True,\
+        default_info = (__package__,"pyri_device_manager_default_info.yml"), \
+        arg_parser = parser, no_device_manager=True) as service_node_setup:
+        
         RRN.ThreadPoolCount = 100
 
-        dev_manager = DeviceManager(args.variable_storage_url, device_info=device_info, node = RRN) 
+        dev_manager = DeviceManager(service_node_setup.argparse_results.variable_storage_url, \
+            service_node_setup.argparse_results.variable_storage_identifier, \
+            device_info=service_node_setup.device_info_struct, node = RRN) 
 
-        service_ctx = RRN.RegisterService("device_manager","tech.pyri.device_manager.DeviceManager",dev_manager)
-        service_ctx.SetServiceAttributes(device_attributes)
-
-        if args.wait_signal:  
-            #Wait for shutdown signal if running in service mode          
-            print("Press Ctrl-C to quit...")
-            import signal
-            signal.sigwait([signal.SIGTERM,signal.SIGINT])
-        else:
-            #Wait for the user to shutdown the service
-            if (sys.version_info > (3, 0)):
-                input("Server started, press enter to quit...")
-            else:
-                raw_input("Server started, press enter to quit...")
+        service_node_setup.register_service("device_manager","tech.pyri.device_manager.DeviceManager",dev_manager)
+        
+        service_node_setup.wait_exit()
 
         dev_manager.close()
 
