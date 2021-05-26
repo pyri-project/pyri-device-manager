@@ -24,6 +24,7 @@ setup(
     },
     entry_points = {
         'pyri.plugins.robdef': ['pyri-device-manager-robdef=pyri.device_manager.robdef:get_robdef_factory'],
-        'console_scripts': ['pyri-device-manager-service = pyri.device_manager.__main__:main']
+        'console_scripts': ['pyri-device-manager-service = pyri.device_manager.__main__:main'],
+        'pyri.plugins.service_node_launch': ['pyri-device-manager-launch = pyri.device_manager.service_node_launch:get_service_node_launch_factory']
     }
 )
