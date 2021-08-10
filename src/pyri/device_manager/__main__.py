@@ -16,7 +16,8 @@ def main():
         
     with PyriServiceNodeSetup("tech.pyri.device_manager",59902,register_plugin_robdef=True,\
         default_info = (__package__,"pyri_device_manager_default_info.yml"), \
-        arg_parser = parser, no_device_manager=True) as service_node_setup:
+        arg_parser = parser, no_device_manager=True,
+        distribution_name="pyri-device-manager") as service_node_setup:
         
         RRN.ThreadPoolCount = 100
 
