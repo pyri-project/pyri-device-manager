@@ -25,8 +25,8 @@ Command line options:
 | Option | Type | Required | Description |
 | ---    | ---  | ---      | ---         |
 | `--variable-storage-url=` | Robot Raconteur URL | No | Robot Raconteur URL of variable storage service |
-| `--variable-storage-identifier=` | Identifier | No | Robot Raconteur device identifier in string format for variable storage srevice
-| `--device-info-file=` | File | No | Robot Raconteur `DeviceInfo` YAML file. Defaults to contents of `pyri_variable_storage_default_info.yml` |
+| `--variable-storage-identifier=` | Identifier | No | Robot Raconteur device identifier in string format for variable storage service |
+| `--device-info-file=` | File | No | Robot Raconteur `DeviceInfo` YAML file. Defaults to contents of `pyri_device_manager_default_info.yml` |
 
 This service may use any standard `--robotraconteur-*` service node options.
 
