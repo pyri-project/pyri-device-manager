@@ -1,7 +1,7 @@
 [project]
 
 name = "pyri-device-manager"
-version = "0.2.0"
+version = "0.3.0"
 description = "PyRI Teach Pendant Device Manager"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -18,7 +18,8 @@ classifiers = [
 
 dependencies = [
     'pyri-common',
-    'robotraconteur'       
+    'RobotRaconteur>=1.2.0',
+    'RobotRaconteurCompanion>=0.4.0',  
 ]
 
 [project.optional-dependencies]
@@ -46,3 +47,6 @@ requires = [
     'setuptools',
     'toml',
 ]
+
+[tool.setuptools.package-data]
+"pyri.device_manager" = ["*.robdef","*.yml"]
