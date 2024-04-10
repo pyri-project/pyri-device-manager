@@ -89,7 +89,7 @@ class DeviceManager(object):
         else:
             if variable_storage_identifier is None:
                 variable_storage_identifier = "pyri_variable_storage"
-            filter = _DeviceManagerConnectFilter(variable_storage_identifier)
+            filter = _DeviceManagerConnectFilter(self._node, variable_storage_identifier)
             self._variable_storage = self._node.SubscribeServiceByType("tech.pyri.variable_storage.VariableStorage", filter.get_filter())
         
     def _service_detected(self, sub,sub_id,service_info2):
